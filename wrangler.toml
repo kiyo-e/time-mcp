@@ -1,0 +1,8 @@
+name = "mcp-time-worker"
+main = "src/index.ts"
+compatibility_date = "2025-11-27"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Default timezone (IANA). Can be overridden per deployment using Wrangler's `--var` flag or dashboard env vars.
+DEFAULT_TIMEZONE = "Asia/Tokyo"
