@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2021",
-    "lib": ["ES2021", "WebWorker"],
+    "lib": ["ES2021"],
     "module": "ES2020",
     "moduleResolution": "Bundler",
     "strict": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "types": ["@cloudflare/workers-types"]
   },
   "include": ["src/**/*"]

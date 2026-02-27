@@ -41,36 +41,37 @@ function formatTime(tz: string): string {
   }
 }
 
-const server = new McpServer({
-  name: 'mcp-time-worker',
-  version: '0.2.0'
-});
+function createServer(env: Env): McpServer {
+  const server = new McpServer({
+    name: 'what-time',
+    version: '0.2.0'
+  });
 
-server.tool(
-  'get_time',
-  'Returns the current date and time (to the second) in a given IANA time zone. Defaults to env DEFAULT_TIMEZONE or Asia/Tokyo.',
-  z.object({
-    timezone: z.string().describe('IANA time zone, e.g. Asia/Tokyo').optional()
-  }),
-  async ({ timezone }) => {
-    const tz = timezone || currentEnv?.DEFAULT_TIMEZONE || 'Asia/Tokyo';
-    const now = formatTime(tz);
-    return {
-      content: [{ type: 'text', text: now }],
-      metadata: { timezone: tz }
-    };
-  }
-);
+  server.tool(
+    'get_time',
+    'Returns the current date and time (to the second) in a given IANA time zone. Defaults to env DEFAULT_TIMEZONE or Asia/Tokyo.',
+    {
+      timezone: z.string().describe('IANA time zone, e.g. Asia/Tokyo').optional()
+    },
+    async ({ timezone }) => {
+      const tz = timezone || env.DEFAULT_TIMEZONE || 'Asia/Tokyo';
+      const now = formatTime(tz);
+      return {
+        content: [{ type: 'text', text: now }],
+        metadata: { timezone: tz }
+      };
+    }
+  );
 
-const handler = createMcpHandler(server, {
-  cors: { allowOrigin: '*' }
-});
-
-let currentEnv: Env | undefined;
+  return server;
+}
 
 export default {
   fetch(request: Request, env: Env, ctx: ExecutionContext): Response | Promise<Response> {
-    currentEnv = env;
+    const handler = createMcpHandler(createServer(env), {
+      route: '/mcp',
+      corsOptions: { origin: '*' }
+    });
     return handler(request, env, ctx);
   }
 };
